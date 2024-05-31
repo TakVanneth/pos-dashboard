@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 return new class extends Migration
 {
@@ -11,12 +12,28 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::create('roles', function (Blueprint $table) {
+            $table->id();
+            $table->char('uuid', 36)->default(Str::uuid());
+            $table->string('position')->unique();
+            $table->timestamps();
+        });
+
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            // $table->uuid();
+            $table->char('uuid', 36)->default(Str::uuid());
+            $table->string('username')->nullable();
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string("store_name")->nullable();
+            $table->string("store_address")->nullable();
+            $table->string("store_phone")->nullable();
+            $table->string("store_email")->nullable();
+            $table->string('photo')->nullable();
+            $table->foreignId('role_id')->nullable()->constrained('roles')->onDelete('set null');
             $table->rememberToken();
             $table->timestamps();
         });
@@ -45,5 +62,6 @@ return new class extends Migration
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('roles');
     }
 };
